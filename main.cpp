@@ -3,40 +3,40 @@
 using namespace std;
 
 void play(){
-    int curPlayer = 0;
-    int pos;
-    Board g;
-    g.initialize();
-    int _x = 0, _o = 0;
-    bool p1win = 0, p2win = 0;
+    // create the game board
+    Board gameBoard;
+    gameBoard.initialize();
+
+    int curPlayer = 0; // first player
+    int _x = 0, _o = 0; // number of x's and o's
+    bool p1win = 0, p2win = 0; // keep track whether player 1, player 2 win
+
     while(1){
-        puts("\n\n\n\n");
-        puts("\t     Player 1<X> - Player 2<O>\n\n");
-        // print current board
-        g.print();
-        printf("\t\tPlayer %d ('%c') Turn\n",curPlayer+1,curPlayer == 0 ? 'X':'O');
-        printf("Please Enter a valid number on the board:");
-        // where to play
-        scanf("%d",&pos);
-        if(g.place(pos-1,curPlayer) == false)
-            continue;
+        if(gameBoard.readMove(gameBoard,curPlayer) == false) // read player move
+            continue; // if not a valid move ask him to enter again
+
         // increase number of which one we put
-        _x += (curPlayer == 0);
-        _o += (curPlayer == 1);
+        _x += (curPlayer == 0); // if player 0 plays increase number of X's
+        _o += (curPlayer == 1); // if player 1 plays increase number of O's
+
+        // make curPlayer the next player
         curPlayer = (curPlayer+1)%2;
+
         // check win
-        p1win = g.checkWin('X');
-        p2win = g.checkWin('O');
-        if(p1win){
-            g.print();
+        p1win = gameBoard.checkWin('X');
+        p2win = gameBoard.checkWin('O');
+
+
+        if(p1win){ // if Player 1 wins
+            gameBoard.print();
             puts("\t\tPlayer 1 win \n\n");
             return;
-        }else if(p2win){
-            g.print();
+        }else if(p2win){ // if player 2 wins
+            gameBoard.print();
             puts("\t\tPlayer 2 win \n\n");
             return;
-        }else if(_x+_o == 9){
-            g.print();
+        }else if(_x+_o == 9){ // if draw ( all board is full )
+            gameBoard.print();
             puts("\t\tDraw\n\n");
             return;
         }
@@ -46,8 +46,9 @@ void play(){
 int main(){
     while(1){
         puts("\n\n\t\t     Tic Tac Toe\n");
-        int choice;
         puts("Enter Number 1 for 2 Player Game:");
+
+        int choice;
         scanf("%d",&choice);
         if(choice == 1){
             play();
