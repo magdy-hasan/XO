@@ -1,30 +1,41 @@
 #include <stdio.h>
-#include<Board.h>
+#include "Board.h"
+#include "AI.h"
 using namespace std;
+
+bool is_2_player_game;
 
 void play(){
     // create the game board
     Board gameBoard;
     gameBoard.initialize();
+	AI _AI;
 
+	if (is_2_player_game == false){
+		puts("\n\n\nEnter one of the following option\n");
+		puts("\t1 - If you want to go first");
+		puts("\t2 - If you want to go second");
+		printf("Enter your option here: ");	
+		int choice;
+		scanf("%d", &choice);
+		if (choice == 1)
+			_AI._AI_player = 1;
+		else
+			_AI._AI_player = 0;
+	}
     int curPlayer = 0; // first player
-    int _x = 0, _o = 0; // number of x's and o's
-    bool p1win = 0, p2win = 0; // keep track whether player 1, player 2 win
+    bool p1win = 0, p2win = 0 , draw = 0; // keep track whether player 1, player 2 win, draw
 
     while(1){
-        if(gameBoard.readMove(gameBoard,curPlayer) == false) // read player move
-            continue; // if not a valid move ask him to enter again
-
-        // increase number of which one we put
-        _x += (curPlayer == 0); // if player 0 plays increase number of X's
-        _o += (curPlayer == 1); // if player 1 plays increase number of O's
-
+		gameBoard.get_move(is_2_player_game, _AI,curPlayer);
         // make curPlayer the next player
         curPlayer = (curPlayer+1)%2;
 
         // check win
         p1win = gameBoard.checkWin('X');
         p2win = gameBoard.checkWin('O');
+		// check draw
+		draw = gameBoard.checkDraw();
 
 
         if(p1win){ // if Player 1 wins
@@ -35,7 +46,7 @@ void play(){
             gameBoard.print();
             puts("\t\tPlayer 2 win \n\n");
             return;
-        }else if(_x+_o == 9){ // if draw ( all board is full )
+        }else if(draw){ // if draw ( all board is full )
             gameBoard.print();
             puts("\t\tDraw\n\n");
             return;
@@ -46,19 +57,23 @@ void play(){
 int main(){
     while(1){
         puts("\n\n\t\t     Tic Tac Toe\n");
-        puts("Enter Number 1 for 2 Player Game:");
-
+		puts("Enter one of the following option\n");
+		puts("\t1 - Computer vs player");
+		puts("\t2 - player vs player");
+		puts("\t3 - Exit");
+		printf("Enter your option here: ");
         int choice;
         scanf("%d",&choice);
         if(choice == 1){
+			is_2_player_game = 0;
             play();
-            puts("Enter 1 to play again Or 2 to exit:");
-            scanf("%d",&choice);
-            if(choice == 1)
-                continue;
-            else
-                break;
-        }// To-DO other choices
+		}
+		else if (choice == 2){
+			is_2_player_game = 1;
+			play();
+		}
+		else
+			break;
     }
-    puts("Good Bye");
+    puts("\n\n\t\tGood Bye");
 }

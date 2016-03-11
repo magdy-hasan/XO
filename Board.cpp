@@ -1,35 +1,50 @@
 #include "Board.h"
-#include<stdio.h>
-using namespace std;
+
 
 void Board::initialize(){
     for(int i=0;i<9;i++)
-        _board[i] = '0'+i+1;
+        _board[i] = '0'+i;
 }
 
-bool Board::readMove(Board &cur_board,int curPlayer){
+void Board::get_move(bool is_2_player_game, AI &_AI,int cur_player){
+	Board cur_board_ = *this;
+	if (is_2_player_game == false && cur_player == _AI._AI_player)
+		place(_AI.get_move(cur_board_, cur_player,-(1<<30),(1<<30)).position, cur_player);
+	else{
+		while (readMove(cur_player) == false);
+	}
+	return;
+}
+
+bool Board::readMove(int curPlayer){
     puts("\n\n\n\n");
-    puts("\t     Player 1<X> - Player 2<O>\n\n");
+
+	if (curPlayer == 0)
+		puts("\t     <O> - Turn \n\n");
+	else
+		puts("\t     <X> - Turn \n\n");
 
     // print current board
-    cur_board.print();
+    print();
     printf("\t\tPlayer %d ('%c') Turn\n",curPlayer+1,curPlayer == 0 ? 'X':'O');
-    printf("Please Enter a valid number on the board:");
+    printf("Please Enter a valid number(number from 0-8 and unused cell) on the board:");
 
     // where to play
     int pos;
     scanf("%d",&pos);
-    if(cur_board.place(pos-1,curPlayer) == false)
+    if(place(pos,curPlayer) == false)
         return 0; // if not a valid position
     return 1;
 }
 
 bool Board::place(int idx,int player){
-    if(_board[idx] == '0'+idx+1){
+    if(_board[idx] == '0'+idx || player == -1){
         if(player == 0)
             _board[idx] = 'X';
-        else
+		else if (player == 1)
             _board[idx] = 'O';
+		else 
+			_board[idx] = '0'+idx;
         return 1;
     }else{ // if we in already visited cell
         puts("invalid move, try again\n");
@@ -67,4 +82,12 @@ void Board::print(){
 
     printf("\t\t  %c  |  %c  |  %c  \n",_board[6],_board[7],_board[8]);
     puts("\t\t     |     |     \n");
+}
+
+
+bool Board::checkDraw(){
+	for (int i = 0; i < 9; i++)
+		if (_board[i] == '0' + i)
+			return 0;
+	return 1;
 }
